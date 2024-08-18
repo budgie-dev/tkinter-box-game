@@ -1,5 +1,7 @@
 import tkinter as tk
 from random import randint
+from threading import Thread
+from time import sleep
 
 root = tk.Tk()
 root.geometry('700x750')
@@ -19,7 +21,7 @@ for i in range(7):
         gridlist[gridlistitem].place(x=defx, y=defy)
         gridlistitem += 1
     
-pos = 4
+pos = 24
 applestatus = False
 applepos = -1
 points = 0
@@ -52,8 +54,12 @@ def poscheck(posvar, list):
         list[applepos].config(bg='red')
         applestatus = True
         
+lastup = False
+lastdown = False
+lastright = False
+lastleft = False
 
-def up(event):
+def up():
     global pos, gridlist
     if pos in (0,1,2,3,4,5,6):
         pass
@@ -61,7 +67,7 @@ def up(event):
         pos -= 7
         poscheck(pos, gridlist)
 
-def left(event):
+def left():
     global pos, gridlist
     if pos in (0,7,14,21,28,35,42):
         pass
@@ -69,7 +75,7 @@ def left(event):
         pos -= 1
         poscheck(pos, gridlist)
 
-def right(event):
+def right():
     global pos, gridlist
     if pos in (6,13,20,27,34,41,48):
         pass
@@ -77,7 +83,7 @@ def right(event):
         pos += 1
         poscheck(pos, gridlist)
 
-def down(event):
+def down():
     global pos, gridlist
     if pos in (42,43,44,45,46,47,48):
         pass
@@ -85,10 +91,80 @@ def down(event):
         pos += 7
         poscheck(pos, gridlist)
                 
-root.bind('w', up)
-root.bind('d', right)
-root.bind('a', left)
-root.bind('s', down)
+def lastupdate(lastdirection):
+    global lastup, lastdown, lastright, lastleft
+    lastup = False
+    lastdown = False
+    lastright = False
+    lastleft = False
+    match lastdirection:
+        case 'up':
+            lastup = True
+        case 'down':
+            lastdown = True
+        case 'right':
+            lastright = True
+        case 'left':
+            lastleft = True
+
+    
+def uploop():
+    global lastup, lastdown, lastright, lastleft
+    lastupdate('up')
+    while True:
+        sleep(0.3)
+        if lastup == False:
+            exit()
+        up()
+
+def downloop():
+    global lastup, lastdown, lastright, lastleft
+    lastupdate('down')
+    while True:
+        sleep(0.3)
+        if lastdown == False:
+            exit()
+        down()
+
+def rightloop():
+    global lastup, lastdown, lastright, lastleft
+    lastupdate('right')
+    while True:
+        sleep(0.3)
+        if lastright == False:
+            exit()
+        right()
+
+def leftloop():
+    global lastup, lastdown, lastright, lastleft
+    lastupdate('left')
+    while True:
+        sleep(0.3)
+        if lastleft == False:
+            exit()
+        left()
+def leftstart(event):
+    global lastleft
+    if lastleft == False:
+        Thread(target=leftloop).start()
+def upstart(event):
+    global lastup
+    if lastup == False:
+        Thread(target=uploop).start()
+def downstart(event):
+    global lastdown
+    if lastdown == False:
+        Thread(target=downloop).start()
+def rightstart(event):
+    global lastright
+    if lastright == False:
+        Thread(target=rightloop).start()
+
+root.bind('w', upstart)
+root.bind('s', downstart)
+root.bind('a', leftstart)
+root.bind('d', rightstart)
+
 poscheck(pos, gridlist)
 
 root.mainloop()
