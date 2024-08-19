@@ -197,10 +197,10 @@ def rightstart(event):
     if lastright == False:
         Thread(target=rightloop).start()
 
-root.bind('w', upstart)
-root.bind('s', downstart)
-root.bind('a', leftstart)
-root.bind('d', rightstart)
+root.bind('<Up>', upstart)
+root.bind('<Down>', downstart)
+root.bind('<Left>', leftstart)
+root.bind('<Right>', rightstart)
 
 poscheck(pos, gridlist)
 
