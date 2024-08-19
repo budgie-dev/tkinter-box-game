@@ -7,8 +7,13 @@ root = tk.Tk()
 root.geometry('700x750')
 
 gridlist = []
+litupold = []
+posold = []
+
 for i in range(49):
     gridlist.append(tk.Canvas(bg='white', height=100, width=100))
+    litupold.append(False)
+    posold.append(-69)
 
 defx = -100
 defy = -100
@@ -25,18 +30,36 @@ pos = 24
 applestatus = False
 applepos = -1
 points = 0
+gameovercheck = False
 pointlabel = tk.Label(text=f'Points: {points}', font='Terminus 30')
 pointlabel.place(y=700)
 
+def gameover():
+    global pointlabel, gridlist, gameovercheck
+    if gameovercheck == True:
+        pass
+    else:
+        for i in range(49):
+            gridlist[i].place_forget()
+        pointlabel.place_forget()
+        root.unbind_all('siur')
+        for i in range(5):
+            tk.Label().pack()
+        tk.Label(text='No i ciul, przegrałeś.', font='Terminus 30').pack()
+        gameovercheck = True
+
 def poscheck(posvar, list):
-    global applepos, applestatus, points, pointlabel
+    global applepos, applestatus, points, pointlabel, posold, litupold
     for i in range(49):
         if posvar == i:
             list[i].config(bg='green')
-        if posvar == i:
-            pass
         else:
-            list[i].config(bg='white')
+            if i == posold:
+                pass
+            else:
+                list[i].config(bg='white')
+                litupold[i] = False
+
         
         #collision
         if posvar == applepos:
@@ -54,40 +77,54 @@ def poscheck(posvar, list):
         list[applepos].config(bg='red')
         applestatus = True
         
+        if posold[0] != -69:
+            list[posold[0]].config(bg='green')
+            litupold[posold[0]] = True
+        
+        #game over christopher
+        if litupold[i] == True:
+            if posvar == i:
+                gameover()
+                exit()
+        
 lastup = False
 lastdown = False
 lastright = False
 lastleft = False
 
 def up():
-    global pos, gridlist
+    global pos, gridlist, posold
     if pos in (0,1,2,3,4,5,6):
-        pass
+        exit()
     else:
+        posold[0] = pos
         pos -= 7
         poscheck(pos, gridlist)
 
 def left():
-    global pos, gridlist
+    global pos, gridlist, posold
     if pos in (0,7,14,21,28,35,42):
-        pass
+        exit()
     else:
+        posold[0] = pos
         pos -= 1
         poscheck(pos, gridlist)
 
 def right():
-    global pos, gridlist
+    global pos, gridlist, posold
     if pos in (6,13,20,27,34,41,48):
-        pass
+        exit()
     else:
+        posold[0] = pos
         pos += 1
         poscheck(pos, gridlist)
 
 def down():
-    global pos, gridlist
+    global pos, gridlist, posold
     if pos in (42,43,44,45,46,47,48):
-        pass
+        exit()
     else:
+        posold[0] = pos
         pos += 7
         poscheck(pos, gridlist)
                 
@@ -112,7 +149,7 @@ def uploop():
     global lastup, lastdown, lastright, lastleft
     lastupdate('up')
     while True:
-        sleep(0.3)
+        sleep(0.1)
         if lastup == False:
             exit()
         up()
@@ -121,7 +158,7 @@ def downloop():
     global lastup, lastdown, lastright, lastleft
     lastupdate('down')
     while True:
-        sleep(0.3)
+        sleep(0.1)
         if lastdown == False:
             exit()
         down()
@@ -130,7 +167,7 @@ def rightloop():
     global lastup, lastdown, lastright, lastleft
     lastupdate('right')
     while True:
-        sleep(0.3)
+        sleep(0.1)
         if lastright == False:
             exit()
         right()
@@ -139,7 +176,7 @@ def leftloop():
     global lastup, lastdown, lastright, lastleft
     lastupdate('left')
     while True:
-        sleep(0.3)
+        sleep(0.1)
         if lastleft == False:
             exit()
         left()
